@@ -1,24 +1,16 @@
 version: 2.1
 
+orbs:
+  docker: circleci/docker@2.8.1
+
 jobs:
   build-and-test:
     machine:
       image: ubuntu-2204:2024.11.1
     steps:
 
-      - checkout
-
-      - run:
-          name: Install curl
-          command: sudo apt-get update && sudo apt-get install -y curl
-
-      - run:
-          name: Login to DockerHub
-          command: echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
-
-      - run:
-          name: Build Docker Image
-          command: docker build -t sample-app .
+      - docker/build:
+          image: sample-app
 
       - run:
           name: Run Docker Container
@@ -30,11 +22,12 @@ jobs:
           name: Test App
           command: curl -f http://127.0.0.1:8080 || (echo "App is not responding"; exit 1)
 
-      - run:
-          name: Push Docker Image to DockerHub
-          command: |
-            docker tag sample-app $DOCKERHUB_USER/sample-app:latest
-            docker push $DOCKERHUB_USER/sample-app:latest
+      - docker/publish:
+          image: sample-app
+          tag: $DOCKERHUB_USER/sample-app:latest
+          registry: https://index.docker.io/v1/
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASS
 
 workflows:
   version: 2
