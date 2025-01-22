@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-test:
     machine:
-      image: cimg/base
+      image: ubuntu-2204:2024.11.1
     steps:
 
       - checkout
