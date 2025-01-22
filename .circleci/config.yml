@@ -29,12 +29,11 @@ jobs:
           name: Test App
           command: curl -f http://127.0.0.1:8080 || (echo "App is not responding"; exit 1)
 
-      - docker/push:
+      - docker/publish:
           image: sample-app
           tag: $DOCKERHUB_USER/sample-app:latest
-          registry: https://index.docker.io/v1/
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASS
+          docker-username: $DOCKERHUB_USER
+          docker-password: $DOCKERHUB_PASS
 
 workflows:
   version: 2
