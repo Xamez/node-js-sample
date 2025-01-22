@@ -2,8 +2,8 @@ version: 2.1
 
 jobs:
   build-and-test:
-    docker:
-      - image: docker:stable
+    machine:
+      image: ubuntu-2004:202101-01
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -12,13 +12,11 @@ jobs:
 
       - run:
           name: Install curl
-          command: |
-            apk add --no-cache curl
+          command: sudo apt-get update && sudo apt-get install -y curl
 
       - run:
           name: Login to DockerHub
-          command: |
-            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
+          command: echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin
 
       - run:
           name: Build Docker Image
@@ -32,7 +30,7 @@ jobs:
 
       - run:
           name: Test App
-          command: curl -f http://127.0.0.1:8080 || (echo "L'application n'a pas démarré correctement"; exit 1)
+          command: curl -f http://127.0.0.1:8080 || (echo "App is not responding"; exit 1)
 
       - run:
           name: Push Docker Image to DockerHub
