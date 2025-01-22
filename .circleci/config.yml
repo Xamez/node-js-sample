@@ -7,6 +7,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+
       - checkout
 
       - run:
@@ -24,23 +25,21 @@ jobs:
           command: docker build -t sample-app .
 
       - run:
-          name: Run and Test Docker Container
+          name: Run Docker Container
           command: |
             docker run -d -p 8080:8080 --name sample-app-container sample-app
             sleep 5
-#            curl http://localhost:8080
 
       - run:
-          name: Check Docker Container Logs
-          command: docker logs sample-app-container
+          name: Test App
+          command: |
+            curl -f http://localhost:8080 || (echo "L'application n'a pas démarré correctement"; exit 1)
 
-#            curl -f http://localhost:8080 || (echo "L'application n'a pas démarré correctement"; exit 1)
-#
-#      - run:
-#          name: Push Docker Image to DockerHub
-#          command: |
-#            docker tag sample-app $DOCKERHUB_USER/sample-app:latest
-#            docker push $DOCKERHUB_USER/sample-app:latest
+      - run:
+          name: Push Docker Image to DockerHub
+          command: |
+            docker tag sample-app $DOCKERHUB_USER/sample-app:latest
+            docker push $DOCKERHUB_USER/sample-app:latest
 
 workflows:
   version: 2
