@@ -27,7 +27,7 @@ jobs:
           name: Run and Test Docker Container
           command: |
             docker run -d -p 8080:8080 --name sample-app-container sample-app
-            sleep 2
+            sleep 5
             curl -f http://localhost:8080 || (echo "L'application n'a pas démarré correctement"; exit 1)
 
       - run:
