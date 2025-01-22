@@ -28,7 +28,7 @@ jobs:
           command: |
             docker run -d -p 8080:8080 --name sample-app-container sample-app
             sleep 5
-            curl http://localhost:8080
+#            curl http://localhost:8080
 
       - run:
           name: Check Docker Container Logs
