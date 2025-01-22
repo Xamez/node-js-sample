@@ -10,13 +10,11 @@ jobs:
       image: ubuntu-2204:2023.10.1
 
     steps:
-
       - checkout
 
       - run:
           name: Install curl
           command: sudo apt-get update && sudo apt-get install -y curl
-
 
       - docker/build:
           image: sample-app
@@ -31,7 +29,7 @@ jobs:
           name: Test App
           command: curl -f http://127.0.0.1:8080 || (echo "App is not responding"; exit 1)
 
-      - docker/publish:
+      - docker/push:
           image: sample-app
           tag: $DOCKERHUB_USER/sample-app:latest
           registry: https://index.docker.io/v1/
