@@ -1,0 +1,37 @@
+name: Build and Test Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install curl
+        run: sudo apt-get update && sudo apt-get install -y curl
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t sample-app .
+
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 8080:8080 --name sample-app-container sample-app
+          sleep 2
+
+      - name: Test App
+        run: |
+          curl -f http://127.0.0.1:8080 || (echo "App is not responding" && exit 1)
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          docker tag sample-app ${{ secrets.DOCKERHUB_USER }}/sample-app:latest
+          docker push ${{ secrets.DOCKERHUB_USER }}/sample-app:latest
